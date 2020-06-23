@@ -1,0 +1,694 @@
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.JTextField;
+import javax.swing.JFormattedTextField;
+import java.awt.Font;
+import javax.swing.JTextPane;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import java.awt.FlowLayout;
+import javax.swing.BoxLayout;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.FormSpecs;
+import com.jgoodies.forms.layout.RowSpec;
+import net.miginfocom.swing.MigLayout;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import java.awt.Dialog.ModalExclusionType;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.sql.Date;
+import java.text.DecimalFormat;
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.Vector;
+import java.awt.Toolkit;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.xml.crypto.Data;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.JList;
+import javax.swing.AbstractListModel;
+import javax.swing.JSpinner;
+import javax.swing.JSplitPane;
+import javax.swing.JButton;
+import java.awt.Button;
+import javax.swing.ImageIcon;
+import javax.swing.SwingConstants;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.SoftBevelBorder;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
+import javax.swing.border.LineBorder;
+
+public class TelaPrincipal extends JFrame
+{
+
+	private JPanel mainPanel;
+	private JPanel namePanel;
+	private JPanel buttonPanel;
+	private JTable table;
+	private JScrollPane scrollPane;
+
+	// Cria a lista
+	private static Lista minhaLista = new Lista();
+
+	// Cria classe data (que pega o mes e o ano atual)
+	private static Datas data = new Datas();
+
+	/**
+	 * Main
+	 **/
+	public static void main(String[] args)
+	{
+
+		/*
+		 * JOptionPane.showMessageDialog(null, "Depois de Editar algum Dado na Tabela Pressione 'ENTER' para Confirmar"
+		 * , "Aviso para Edição da Tabela", JOptionPane.WARNING_MESSAGE);
+		 */
+
+		EventQueue.invokeLater(new Runnable() {
+			public void run()
+			{
+				try
+				{
+					TelaPrincipal frame = new TelaPrincipal();
+					frame.setVisible(true);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Tela Principal
+	 */
+	public TelaPrincipal()
+	{
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent arg0)
+			{
+
+				JOptionPane.showMessageDialog(null, "Salvo e Atualizado !!!", "Informação", JOptionPane.INFORMATION_MESSAGE);
+
+			}
+		});
+		setIconImage(Toolkit.getDefaultToolkit().getImage(TelaPrincipal.class.getResource("/windowBuilder/images/Lion-48.png")));
+
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setTitle("Programa para Controle de Despesas 1.0");
+		setBounds(100, 100, 960, 600);
+		setLocationRelativeTo(null); // Tela no meio
+		mainPanel = new JPanel();
+		mainPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(mainPanel);
+		mainPanel.setLayout(new BorderLayout(0, 0));
+
+		namePanel = new JPanel();
+		mainPanel.add(namePanel, BorderLayout.SOUTH);
+
+		JLabel lblMaurcioOliveiraMonti = new JLabel("Maur\u00EDcio Oliveira Monti");
+		lblMaurcioOliveiraMonti.setFont(new Font("Harlow Solid Italic", Font.ITALIC, 12));
+
+		JLabel lblMauricioomontigmailcom = new JLabel("mauricioomonti@gmail.com");
+		lblMauricioomontigmailcom.setFont(new Font("Harlow Solid Italic", Font.ITALIC, 12));
+		GroupLayout gl_namePanel = new GroupLayout(namePanel);
+		gl_namePanel.setHorizontalGroup(gl_namePanel.createParallelGroup(Alignment.LEADING).addGroup(gl_namePanel.createSequentialGroup().addComponent(lblMaurcioOliveiraMonti).addPreferredGap(ComponentPlacement.RELATED, 683, Short.MAX_VALUE).addComponent(lblMauricioomontigmailcom)));
+		gl_namePanel.setVerticalGroup(gl_namePanel.createParallelGroup(Alignment.TRAILING).addGroup(gl_namePanel.createSequentialGroup().addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addGroup(gl_namePanel.createParallelGroup(Alignment.BASELINE).addComponent(lblMaurcioOliveiraMonti).addComponent(lblMauricioomontigmailcom))));
+		namePanel.setLayout(gl_namePanel);
+
+		buttonPanel();
+
+		tabelaPagamentos();
+	}
+
+	/**
+	 * Painel dos botões
+	 */
+	private void buttonPanel()
+	{
+		buttonPanel = new JPanel();
+
+		mainPanel.add(buttonPanel, BorderLayout.WEST);
+
+		JButton btnAdicionarNovoPagamento = new JButton("Adicionar Novo Pagamento");
+		btnAdicionarNovoPagamento.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0)
+			{
+
+				adicionaLinha();
+
+			}
+		});
+		btnAdicionarNovoPagamento.setIcon(new ImageIcon(TelaPrincipal.class.getResource("/windowBuilder/images/Stork With Bundle-48.png")));
+
+		JButton btnRemoverPagamentosSelecionados = new JButton("Remover Pagamento Selecionado");
+		btnRemoverPagamentosSelecionados.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0)
+			{
+
+				deletaLinhaSelecionada();
+
+			}
+		});
+		btnRemoverPagamentosSelecionados.setIcon(new ImageIcon(TelaPrincipal.class.getResource("/windowBuilder/images/Flying Stork With Bundle-48.png")));
+
+		JLabel lblTotalFaltante = new JLabel("Total Faltante:");
+		lblTotalFaltante.setForeground(new Color(0, 51, 0));
+		lblTotalFaltante.setFont(new Font("Arial", Font.BOLD, 18));
+
+		JLabel lblTotalPago = new JLabel("Total Pago:");
+		lblTotalPago.setForeground(new Color(0, 51, 0));
+		lblTotalPago.setFont(new Font("Arial", Font.BOLD, 18));
+
+		JLabel lblValorTotalPago = new JLabel("VALOR");
+		lblValorTotalPago.setForeground(new Color(51, 204, 51));
+		lblValorTotalPago.setFont(new Font("Arial", Font.BOLD, 18));
+
+		JLabel lblValorTotalFaltante = new JLabel("VALOR");
+		lblValorTotalFaltante.setForeground(new Color(51, 204, 51));
+		lblValorTotalFaltante.setFont(new Font("Arial", Font.BOLD, 18));
+
+		JLabel lblMesAtual = new JLabel("M\u00EAs Atual:");
+		lblMesAtual.setForeground(new Color(0, 0, 102));
+		lblMesAtual.setFont(new Font("Arial", Font.BOLD, 18));
+
+		JLabel lblValorMesAtual = new JLabel("VALOR");
+		lblValorMesAtual.setForeground(new Color(0, 0, 255));
+		lblValorMesAtual.setFont(new Font("Arial", Font.BOLD, 18));
+
+		JLabel lblAnoAtual = new JLabel("Ano Atual:");
+		lblAnoAtual.setForeground(new Color(0, 0, 102));
+		lblAnoAtual.setFont(new Font("Arial", Font.BOLD, 18));
+
+		JLabel lblValorAnoAtual = new JLabel("VALOR");
+		lblValorAnoAtual.setForeground(Color.BLUE);
+		lblValorAnoAtual.setFont(new Font("Arial", Font.BOLD, 18));
+
+		// Atualiza no inicio do programa
+		buttonPanel.addPropertyChangeListener(new PropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent arg0)
+			{
+
+				// Atualiza o Valor do Mês Atual
+				lblValorMesAtual.setText(data.getMes());
+
+				// Atualiza o Valor do Ano Atual
+				lblValorAnoAtual.setText(Integer.toString(data.getAno()));
+
+				// Atualiza o Valor Total Pago Atual
+				lblValorTotalPago.setText(refreshLebelValorTotalPago());
+
+				// Atualiza o Valor Total Pago Faltante
+				lblValorTotalFaltante.setText(refreshLebelValorTotalFaltante());
+
+			}
+		});
+
+		JButton btnSalvar = new JButton("SALVAR");
+		btnSalvar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0)
+			{
+				gravaLista();
+
+				// Atualiza o Valor do Mês Atual
+				lblValorMesAtual.setText(data.getMes());
+
+				// Atualiza o Valor do Ano Atual
+				lblValorAnoAtual.setText(Integer.toString(data.getAno()));
+
+				// Atualiza o Valor Total Pago Atual
+				lblValorTotalPago.setText(refreshLebelValorTotalPago());
+
+				// Atualiza o Valor Total Pago Faltante
+				lblValorTotalFaltante.setText(refreshLebelValorTotalFaltante());
+
+			}
+		});
+
+		btnSalvar.setFont(new Font("Jokerman", Font.PLAIN, 33));
+		btnSalvar.setIcon(new ImageIcon(TelaPrincipal.class.getResource("/windowBuilder/images/Save-96.png")));
+
+		JButton btnMesPosterior = new JButton("M\u00EAs Posterior");
+		btnMesPosterior.setIcon(new ImageIcon(TelaPrincipal.class.getResource("/windowBuilder/images/Right-24.png")));
+		btnMesPosterior.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e)
+			{
+				carregaTabela(carregaMes(1));
+
+				// Atualiza o Valor do Mês Atual
+				lblValorMesAtual.setText(data.getMes());
+
+				// Atualiza o Valor do Ano Atual
+				lblValorAnoAtual.setText(Integer.toString(data.getAno()));
+
+				// Atualiza o Valor Total Pago Atual
+				lblValorTotalPago.setText(refreshLebelValorTotalPago());
+
+				// Atualiza o Valor Total Pago Faltante
+				lblValorTotalFaltante.setText(refreshLebelValorTotalFaltante());
+
+			}
+		});
+
+		JButton btnMesAnterior = new JButton("M\u00EAs Anterior");
+		btnMesAnterior.setIcon(new ImageIcon(TelaPrincipal.class.getResource("/windowBuilder/images/Left-24.png")));
+		btnMesAnterior.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0)
+			{
+				carregaTabela(carregaMes(-1));
+
+				// Atualiza o Valor do Mês Atual
+				lblValorMesAtual.setText(data.getMes());
+
+				// Atualiza o Valor do Ano Atual
+				lblValorAnoAtual.setText(Integer.toString(data.getAno()));
+
+				// Atualiza o Valor Total Pago Atual
+				lblValorTotalPago.setText(refreshLebelValorTotalPago());
+
+				// Atualiza o Valor Total Pago Faltante
+				lblValorTotalFaltante.setText(refreshLebelValorTotalFaltante());
+
+			}
+		});
+
+		GroupLayout gl_buttonPanel = new GroupLayout(buttonPanel);
+		gl_buttonPanel.setHorizontalGroup(gl_buttonPanel.createParallelGroup(Alignment.TRAILING).addGroup(gl_buttonPanel.createSequentialGroup().addGroup(gl_buttonPanel.createParallelGroup(Alignment.LEADING).addComponent(btnAdicionarNovoPagamento, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE).addComponent(btnRemoverPagamentosSelecionados, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE).addComponent(btnSalvar, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE).addGroup(Alignment.TRAILING, gl_buttonPanel.createSequentialGroup().addComponent(btnMesAnterior, GroupLayout.DEFAULT_SIZE, 145, Short.MAX_VALUE).addPreferredGap(ComponentPlacement.RELATED).addComponent(btnMesPosterior)).addGroup(gl_buttonPanel.createSequentialGroup().addGap(17).addGroup(gl_buttonPanel.createParallelGroup(Alignment.TRAILING).addGroup(gl_buttonPanel.createSequentialGroup().addComponent(lblMesAtual, GroupLayout.PREFERRED_SIZE, 125, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.UNRELATED).addComponent(lblValorMesAtual, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE)).addGroup(gl_buttonPanel.createSequentialGroup().addGroup(gl_buttonPanel.createParallelGroup(Alignment.TRAILING).addComponent(lblTotalFaltante).addComponent(lblTotalPago, GroupLayout.PREFERRED_SIZE, 125, GroupLayout.PREFERRED_SIZE)).addPreferredGap(ComponentPlacement.UNRELATED).addGroup(gl_buttonPanel.createParallelGroup(Alignment.LEADING).addComponent(lblValorTotalFaltante).addComponent(lblValorTotalPago, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE))).addGroup(Alignment.LEADING, gl_buttonPanel.createSequentialGroup().addComponent(lblAnoAtual, GroupLayout.PREFERRED_SIZE, 125, GroupLayout.PREFERRED_SIZE).addGap(12).addComponent(lblValorAnoAtual, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE))))).addContainerGap()));
+		gl_buttonPanel.setVerticalGroup(gl_buttonPanel.createParallelGroup(Alignment.LEADING).addGroup(gl_buttonPanel.createSequentialGroup().addComponent(btnAdicionarNovoPagamento).addPreferredGap(ComponentPlacement.RELATED).addComponent(btnRemoverPagamentosSelecionados).addGap(27).addGroup(gl_buttonPanel.createParallelGroup(Alignment.LEADING).addComponent(lblAnoAtual, GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE).addComponent(lblValorAnoAtual, GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE)).addPreferredGap(ComponentPlacement.RELATED, 33, Short.MAX_VALUE).addGroup(gl_buttonPanel.createParallelGroup(Alignment.BASELINE).addComponent(lblMesAtual, GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE).addComponent(lblValorMesAtual, GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE)).addGap(36).addGroup(gl_buttonPanel.createParallelGroup(Alignment.BASELINE).addComponent(lblTotalPago, GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE).addComponent(lblValorTotalPago, GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE)).addGap(37).addGroup(gl_buttonPanel.createParallelGroup(Alignment.BASELINE).addComponent(lblTotalFaltante).addComponent(lblValorTotalFaltante, GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE)).addGap(32).addGroup(gl_buttonPanel.createParallelGroup(Alignment.BASELINE).addComponent(btnMesAnterior).addComponent(btnMesPosterior)).addPreferredGap(ComponentPlacement.RELATED).addComponent(btnSalvar)));
+		buttonPanel.setLayout(gl_buttonPanel);
+	}
+
+	/**
+	 * Tabela:
+	 */
+	private void tabelaPagamentos()
+	{
+		scrollPane = new JScrollPane();
+		mainPanel.add(scrollPane, BorderLayout.CENTER);
+		table = new JTable();
+		table.setBorder(new LineBorder(new Color(0, 0, 0)));
+		table.setFont(new Font("Arial", Font.BOLD, 16));
+
+		table.setShowVerticalLines(true);
+		table.setShowHorizontalLines(true);
+		table.setForeground(new Color(0, 128, 0));
+		scrollPane.setViewportView(table);
+		table.setModel(new DefaultTableModel(new Object[][] {}, new String[] { "Nome", "Valor", "Data", "Situa\u00E7\u00E3o" }) {
+			Class[] columnTypes = new Class[] { String.class, String.class, String.class, Boolean.class };
+
+			public Class getColumnClass(int columnIndex)
+			{
+				return columnTypes[columnIndex];
+			}
+		});
+
+		// Centraliza todas as linhas da tabela menos a ultima (3 colunas)
+		for (int i = 0; i < table.getColumnCount() - 1; i++)
+		{
+			DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+			centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+			table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+		}
+
+		// Atualiza todas as linhas de acordo com o conteudo da "minhaLista"
+		carregaTabela(carregaMes(0));
+
+		// Verifica as datas vencidas de acordo com o intervalo
+		// verificaDatasVencidas(); FUNÇÃO BUGADA PRA KARAI
+		// <--------------------------------------------------------------------------------------------------------------
+	}
+
+	// Salva as modificacoes atuais on mes (MUDAR A FORMA QUE SALVA DE PAGAMENTO)
+	private void gravaLista()
+	{
+		// Remove todos os elementos da lista
+		minhaLista.limpaLista();
+
+		// Recebe o valor de cada celula e grava no objeto pagamento para adicionar no objeto lista posteriormente
+		for (int linha = 0; linha < table.getRowCount(); linha++)
+		{
+			// Cria uma classe pagamento para armazenar os dados e adicionar na classe lista
+			Pagamentos pagamento = new Pagamentos();
+			for (int coluna = 0; coluna < table.getColumnCount(); coluna++)
+			{
+
+				switch (coluna)
+				{
+					case 0: // Nome
+						// Se o valor não existe substitui por um valido para gravação
+						if (table.getModel().getValueAt(linha, coluna) == null)
+						{
+							pagamento.setNome("");
+						}
+						else
+						{
+							pagamento.setNome(table.getModel().getValueAt(linha, coluna).toString().trim());
+						}
+
+						break;
+					case 1: // Valor
+						// Se o valor não existe substitui por um valido para gravação
+						if (table.getModel().getValueAt(linha, coluna) == null)
+						{
+							pagamento.setValor(0.0);
+						}
+						else
+						{
+							// Tira o R$
+							String valor = table.getModel().getValueAt(linha, coluna).toString().trim();
+							valor = valor.substring(3);
+
+							pagamento.setValor(Double.parseDouble(valor));
+						}
+						break;
+					case 2: // Data
+						// Se o valor não existe substitui por um valido para gravação
+						if (table.getModel().getValueAt(linha, coluna) == null)
+						{
+							pagamento.setStringData("00/00/0000");
+						}
+						else
+						{
+							String newData = table.getModel().getValueAt(linha, coluna).toString().trim();
+
+							while (data.verificaData(newData) == false && newData != "00/00/0000")
+							{
+								newData = JOptionPane.showInputDialog(null, "Digite uma Data Valida (dd/mm/aaaa) para o Pagamento com Nome " + pagamento.getNome() + " de " + pagamento.getValor() + " Reais", "Data Invalida", JOptionPane.WARNING_MESSAGE);
+								// Se cancelar retorna null prendendo até digitar certo
+								if (newData == null)
+								{
+									newData = "00/00/0000";
+									// System.out.println(newData);
+								}
+							}
+							pagamento.setStringData(newData.toString().trim());
+						}
+						break;
+					case 3: // Estado
+						// Se o valor não existe substitui por um valido para gravação
+						if (table.getModel().getValueAt(linha, coluna) == null)
+						{
+							pagamento.setEstado(false);
+						}
+						else
+						{
+							pagamento.setEstado(Boolean.parseBoolean(table.getModel().getValueAt(linha, coluna).toString().trim()));
+						}
+						break;
+				}
+			}
+			minhaLista.newPagamento(pagamento);
+		}
+
+		minhaLista.salvaLista(data.getMes(), data.getAno());
+		carregaTabela(minhaLista);
+		JOptionPane.showMessageDialog(null, "Salvo e Atualizado !!!", "Informação", JOptionPane.INFORMATION_MESSAGE);
+	}
+
+	private void deletaLinhaSelecionada()
+	{
+
+		if (table.getSelectedRow() < 0)
+		{
+			JOptionPane.showMessageDialog(null, "Por Favor Selecione Uma Linha", "Aviso", JOptionPane.WARNING_MESSAGE);
+		}
+		else
+		{
+			// Remove linha selecionada no momento
+			DefaultTableModel model = (DefaultTableModel) table.getModel();
+			model.removeRow(table.getSelectedRow());
+		}
+	}
+
+	private void adicionaLinha()
+	{
+		DefaultTableModel model = (DefaultTableModel) table.getModel();
+		model.addRow(new Object[] { null, null });
+	}
+
+	// Função que controla o fluxo para a troca de mês
+	private Lista carregaMes(int indice)
+	{
+		// Indices
+		// 0 mes inicial do programa
+		// 1 vai para o mes posterior
+		// -1 vai para o mes anterior
+
+		// Armazena o mes antes do processo
+		int oldMes = data.getNumMes();
+		int oldAno = data.getAnoAtual();
+
+		if (indice == 1)
+		{
+			// Verifica se esta perto do final do ano
+			if (data.getNumMes() < 12)
+			{
+				// Vai para o mes posterior
+				data.setMes(data.getNumMes() + 1);
+			}
+			else
+			{
+				// Vai para o ano posterior
+				data.setAno(data.getAno() + 1);
+				data.setMes(1);
+			}
+		}
+		else if (indice == -1)
+		{
+			// Verifica se esta perto do inicio do ano
+			// Os meses começa a partir de 1 (Janeiro)
+			if (data.getNumMes() > 1)
+			{
+				// Vai para o mes anterior
+				data.setMes(data.getNumMes() - 1);
+			}
+			else
+			{
+				// Vai para o ano anterior
+				data.setAno(data.getAno() - 1);
+				data.setMes(12);
+			}
+		}
+		else if (indice != 0)
+		{
+			JOptionPane.showMessageDialog(null, "Erro no Indice da Função carregarMes", "Erro", JOptionPane.ERROR_MESSAGE);
+		}
+
+		// Verifica se o arquivo da data solicitada existe
+		if (minhaLista.verificaArquivoData(data.getMes(), data.getAno()) == false)
+		{
+			int answer = JOptionPane.showConfirmDialog(null, "Mês não encontrado, Deseja criar um novo?", "Aviso", JOptionPane.YES_NO_OPTION);
+			if (answer == 0)
+			{
+				JOptionPane.showMessageDialog(null, "Criado o mês de " + data.getMes() + " de " + data.getAno(), "Informação", JOptionPane.INFORMATION_MESSAGE);
+
+				// Limpa a lista
+				minhaLista.limpaLista();
+				// Cria um novo arquivo
+				minhaLista.salvaLista(data.getMes(), data.getAno());
+			}
+			else
+			{
+				// Verifica se esta no inicio do programa
+				if (indice == 0)
+				{
+					// Verifica se esta perto do inicio do ano
+					// Os meses começa a partir de 1 (Janeiro)
+					if (data.getNumMes() > 1)
+					{
+						// Vai para o mes anterior
+						data.setMes(data.getNumMes() - 1);
+					}
+					else
+					{
+						// Vai para o ano anterior
+						data.setAno(data.getAno() - 1);
+						data.setMes(12);
+					}
+				}
+				else
+				{
+					// Volta para o mes em que estava e não faz nada
+					data.setMes(oldMes);
+					data.setAno(oldAno);
+				}
+				JOptionPane.showMessageDialog(null, "Voltou para o mês de " + data.getMes() + " de " + data.getAno(), "Informação", JOptionPane.INFORMATION_MESSAGE);
+			}
+		}
+
+		// Carrega a lista do mes
+		minhaLista.carregaLista(data.getMes(), data.getAno());
+		return minhaLista;
+	}
+
+	// Usado por varios metodos para limpar e carregar a lista com novos dados
+	private void carregaTabela(Lista lista)
+	{
+
+		DefaultTableModel model = (DefaultTableModel) table.getModel();
+
+		while (model.getRowCount() > 0)
+		{
+			model.removeRow(0);
+		}
+
+		// Armazena o valor da Data antes de ir para tabela
+		String dataString;
+
+		for (int i = 0; i < lista.getTamanhoLista(); i++)
+		{
+			DefaultTableModel dm = (DefaultTableModel) table.getModel();
+
+			// Se for 00/00/0000 = "30/11/0002" = Ano(0002) -> Manda espaço em branco para tabela
+			if (data.retornaAno(lista.getListaPagamento().get(i).getStringData()) == 2)
+			{
+				dataString = "";
+			}
+			else
+			{
+				dataString = lista.getListaPagamento().get(i).getStringData();
+			}
+
+			// dm.addRow(new Object[] { lista.getListaPagamento().get(i).getNome(),
+			// lista.getListaPagamento().get(i).getValor(), dataString, lista.getListaPagamento().get(i).getEstado() });
+
+			@SuppressWarnings("rawtypes")
+			Vector<Comparable> linha = new Vector<Comparable>();
+			linha.add(lista.getListaPagamento().get(i).getNome());
+
+			// Para adicionar o cifrão nos valores
+			linha.add("R$ " + lista.getListaPagamento().get(i).getValor());
+			linha.add(dataString);
+			linha.add(lista.getListaPagamento().get(i).getEstado());
+
+			dm.addRow(linha);
+		}
+	}
+
+	// Atualiza o label: Valor Total Pago
+	private String refreshLebelValorTotalPago()
+	{
+		double totalPago = 0;
+		for (int linha = 0; linha < table.getRowCount(); linha++)
+		{
+			// Tira o R$
+			String valor = table.getModel().getValueAt(linha, 1).toString().trim();
+			valor = valor.substring(3);
+
+			if (table.getModel().getValueAt(linha, 1) == null)
+			{
+				totalPago += 0;
+			}
+			else
+			{
+				totalPago += Double.parseDouble(valor);
+			}
+		}
+
+		DecimalFormat df = new DecimalFormat("###,##0.00");
+
+		return "R$ " + df.format(totalPago);
+	}
+
+	// Atualiza o label: Valor Total Faltante
+	private String refreshLebelValorTotalFaltante()
+	{
+		double totalFaltante = 0;
+		for (int linha = 0; linha < table.getRowCount(); linha++)
+		{
+			// Tira o R$
+			String valor = table.getModel().getValueAt(linha, 1).toString().trim();
+			valor = valor.substring(3);
+
+			if (table.getModel().getValueAt(linha, 1) == null)
+			{
+				totalFaltante += 0;
+			}
+			else if (Boolean.parseBoolean(table.getModel().getValueAt(linha, 3).toString().trim()) == false)
+			{
+				totalFaltante += Double.parseDouble(valor);
+			}
+		}
+
+		// Diminuir as casas decimais
+
+		DecimalFormat df = new DecimalFormat("###,##0.00");
+
+		return "R$ " + df.format(totalFaltante);
+	}
+
+	private void verificaDatasVencidas()
+	{
+		// Controla até onde pode verificar os arquivos
+		int verificar = 1;
+
+		data.setAno(data.getAnoAtual());
+		data.setMes(data.getNumMesAtual());
+
+		while (verificar > 0)
+		{
+			// Inicio da validação (Se o dia da Lista for menor ou igual ao dia atual + "intervaloProximoDia")
+			minhaLista.carregaLista(data.getMes(), data.getAno());
+
+			for (int i = 0; i < minhaLista.getTamanhoLista(); i++)
+			{
+				// Verifica se pagou a conta
+				if (minhaLista.getListaPagamento().get(i).getEstado() == false)
+				{
+					// Se for 00/00/0000 = "30/11/0002" = Ano(0002) -> Não considera porque é uma data em branca
+					if (data.retornaAno(minhaLista.getListaPagamento().get(i).getStringData()) != 2)
+					{
+						// Verifica se a data da conta já venceu
+						if (minhaLista.getListaPagamento().get(i).getData().before(data.getDataAtual()) == true)
+						{
+							JOptionPane.showMessageDialog(null, "Nome: " + minhaLista.getListaPagamento().get(i).getNome() + ", Valor: R$ " + minhaLista.getListaPagamento().get(i).getValor() + ", Data: " + minhaLista.getListaPagamento().get(i).getStringData(), "Aviso Pagamento Vencido", JOptionPane.WARNING_MESSAGE);
+						}
+					}
+				}
+			}
+
+			// Se for o inicio do ano volta para o ano anterior
+			if (data.getNumMes() == 1)
+			{
+				data.setAno(data.getAno() - 1);
+				data.setMes(12);
+			}
+			else
+			{
+				data.setMes(data.getNumMes() - 1);
+			}
+
+			// Se o arquivo não existir termina a varredura
+			if (minhaLista.verificaArquivoData(data.getMes(), data.getAno()) == false)
+			{
+				verificar = 0;
+			}
+		}
+	}
+}

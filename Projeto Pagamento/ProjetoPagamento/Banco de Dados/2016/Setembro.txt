@@ -1,0 +1,13 @@
+ ; 0.0 ; 30/11/0002 ; false
+ ; 0.0 ; 30/11/0002 ; false
+Lojas Taqi-Taqi ; 200.0 ; 25/09/2016 ; true
+Setembro ; 135.23 ; 22/10/2016 ; true
+Itau ; 125.23 ; 23/10/2016 ; true
+Claro ; 5.56 ; 24/10/2016 ; true
+Oi ; 88.42 ; 25/10/2016 ; true
+Sky ; 200.0 ; 25/10/2016 ; true
+Internet ; 300.0 ; 25/10/2016 ; false
+Telefone ; 800.0 ; 25/10/2016 ; true
+Tumelero ; 100.0 ; 25/10/2016 ; true
+Claro ; 87.0 ; 25/10/2016 ; true
+Net ; 100.45 ; 26/10/2016 ; true

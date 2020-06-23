@@ -1,0 +1,247 @@
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.JTextField;
+import javax.swing.JFormattedTextField;
+import java.awt.Font;
+import javax.swing.JTextPane;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import java.awt.FlowLayout;
+import javax.swing.BoxLayout;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.FormSpecs;
+import com.jgoodies.forms.layout.RowSpec;
+import net.miginfocom.swing.MigLayout;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import java.awt.Dialog.ModalExclusionType;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.Toolkit;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.JList;
+import javax.swing.AbstractListModel;
+import javax.swing.JSpinner;
+import javax.swing.JSplitPane;
+import javax.swing.JButton;
+import java.awt.Button;
+import javax.swing.ImageIcon;
+import javax.swing.SwingConstants;
+import java.awt.Color;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.SoftBevelBorder;
+
+public class TelaPrincipal extends JFrame {
+
+	private JPanel mainPanel;
+	private JPanel namePanel;
+	private JPanel buttonPanel;
+	private JTable table;
+	private JScrollPane scrollPane;
+	
+	// Cria a lista
+	private static Lista minhaLista = new Lista();
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+
+		// Carrega o arquivo de pagamentos na lista
+		minhaLista.carregaLista();
+
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					TelaPrincipal frame = new TelaPrincipal();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public TelaPrincipal() {
+
+		setIconImage(Toolkit.getDefaultToolkit()
+				.getImage(TelaPrincipal.class.getResource("/windowBuilder/images/Lion-48.png")));
+
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setTitle("Programa para Controle de Despesas 1.0");
+		setBounds(100, 100, 960, 600);
+		setLocationRelativeTo(null); // Tela no meio
+		mainPanel = new JPanel();
+		mainPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(mainPanel);
+		mainPanel.setLayout(new BorderLayout(0, 0));
+
+		namePanel = new JPanel();
+		mainPanel.add(namePanel, BorderLayout.SOUTH);
+
+		JLabel lblMaurcioOliveiraMonti = new JLabel("Maur\u00EDcio Oliveira Monti");
+		lblMaurcioOliveiraMonti.setFont(new Font("Harlow Solid Italic", Font.ITALIC, 12));
+
+		JLabel lblMauricioomontigmailcom = new JLabel("mauricioomonti@gmail.com");
+		lblMauricioomontigmailcom.setFont(new Font("Harlow Solid Italic", Font.ITALIC, 12));
+		GroupLayout gl_namePanel = new GroupLayout(namePanel);
+		gl_namePanel.setHorizontalGroup(gl_namePanel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_namePanel.createSequentialGroup().addComponent(lblMaurcioOliveiraMonti)
+						.addPreferredGap(ComponentPlacement.RELATED, 683, Short.MAX_VALUE)
+						.addComponent(lblMauricioomontigmailcom)));
+		gl_namePanel.setVerticalGroup(gl_namePanel.createParallelGroup(Alignment.TRAILING).addGroup(
+				gl_namePanel.createSequentialGroup().addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+						.addGroup(gl_namePanel.createParallelGroup(Alignment.BASELINE)
+								.addComponent(lblMaurcioOliveiraMonti).addComponent(lblMauricioomontigmailcom))));
+		namePanel.setLayout(gl_namePanel);
+
+		buttonPanel();
+
+		tabelaPagamentos();
+	}
+
+	/**
+	 * Painel dos botões
+	 */
+	private void buttonPanel() {
+		buttonPanel = new JPanel();
+		mainPanel.add(buttonPanel, BorderLayout.WEST);
+
+		JButton btnAdicionarNovoPagamento = new JButton("Adicionar Novo Pagamento");
+		btnAdicionarNovoPagamento.setIcon(
+				new ImageIcon(TelaPrincipal.class.getResource("/windowBuilder/images/Stork With Bundle-48.png")));
+
+		JButton btnEditarPagamentoSelecionado = new JButton("Editar Pagamento Selecionado");
+		btnEditarPagamentoSelecionado
+				.setIcon(new ImageIcon(TelaPrincipal.class.getResource("/windowBuilder/images/Stork-48.png")));
+
+		JButton btnRemoverPagamentosSelecionados = new JButton("Remover Pagamentos Selecionados");
+		btnRemoverPagamentosSelecionados.setIcon(new ImageIcon(
+				TelaPrincipal.class.getResource("/windowBuilder/images/Flying Stork With Bundle-48.png")));
+
+		JButton btnSalvar = new JButton("SALVAR");
+		btnSalvar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				JOptionPane.showMessageDialog(null, "SALVO !!!");
+				// algumacoisarecebe=JOptionPane.showInputDialog("bçabal");
+			}
+		});
+
+		btnSalvar.setFont(new Font("Jokerman", Font.PLAIN, 33));
+		btnSalvar.setIcon(new ImageIcon(TelaPrincipal.class.getResource("/windowBuilder/images/Save-96.png")));
+
+		JLabel lblTotalFaltante = new JLabel("Total Faltante:");
+		lblTotalFaltante.setFont(new Font("Arial", Font.BOLD, 18));
+
+		JLabel lblTotalPago = new JLabel("Total Pago:");
+		lblTotalPago.setFont(new Font("Arial", Font.BOLD, 18));
+
+		somaPagamenentos();
+
+		JButton btnNewButton = new JButton("Inicia Novo M\u00EAs");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
+
+		JButton btnNewButton_1 = new JButton("Carregar M\u00EAs");
+		btnNewButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+
+		GroupLayout gl_buttonPanel = new GroupLayout(buttonPanel);
+		gl_buttonPanel.setHorizontalGroup(gl_buttonPanel.createParallelGroup(Alignment.TRAILING).addGroup(gl_buttonPanel
+				.createSequentialGroup()
+				.addGroup(gl_buttonPanel.createParallelGroup(Alignment.LEADING)
+						.addComponent(btnSalvar, GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE)
+						.addComponent(btnEditarPagamentoSelecionado, GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE)
+						.addComponent(btnAdicionarNovoPagamento, GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE)
+						.addComponent(btnRemoverPagamentosSelecionados, GroupLayout.DEFAULT_SIZE,
+								GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+						.addGroup(gl_buttonPanel.createSequentialGroup()
+								.addComponent(btnNewButton, GroupLayout.PREFERRED_SIZE, 141, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(btnNewButton_1, GroupLayout.DEFAULT_SIZE, 136, Short.MAX_VALUE))
+						.addComponent(lblTotalFaltante)
+						.addComponent(lblTotalPago, GroupLayout.PREFERRED_SIZE, 125, GroupLayout.PREFERRED_SIZE))
+				.addContainerGap()));
+		gl_buttonPanel.setVerticalGroup(gl_buttonPanel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_buttonPanel.createSequentialGroup().addComponent(btnAdicionarNovoPagamento).addGap(5)
+						.addComponent(btnEditarPagamentoSelecionado).addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(btnRemoverPagamentosSelecionados).addGap(36).addComponent(lblTotalFaltante)
+						.addGap(27)
+						.addComponent(lblTotalPago, GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE)
+						.addPreferredGap(ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
+						.addGroup(gl_buttonPanel.createParallelGroup(Alignment.LEADING, false)
+								.addComponent(btnNewButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE,
+										Short.MAX_VALUE)
+								.addComponent(btnNewButton_1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE,
+										Short.MAX_VALUE))
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(btnSalvar, GroupLayout.PREFERRED_SIZE, 151, GroupLayout.PREFERRED_SIZE)));
+		buttonPanel.setLayout(gl_buttonPanel);
+	}
+
+	/**
+	 * Tabela:
+	 */
+	private void tabelaPagamentos() {
+		scrollPane = new JScrollPane();
+		mainPanel.add(scrollPane, BorderLayout.CENTER);
+		table = new JTable();
+		table.setShowVerticalLines(true);
+		table.setShowHorizontalLines(true);
+		table.setForeground(new Color(0, 128, 0));
+		table.setEnabled(false);
+		scrollPane.setViewportView(table);
+		table.setModel(new DefaultTableModel(new Object[][] { { null, null, null, null }, },
+				new String[] { "Nome", "Valor", "Data", "Situa\u00E7\u00E3o" }) {
+			Class[] columnTypes = new Class[] { String.class, Double.class, String.class, Boolean.class };
+
+			public Class getColumnClass(int columnIndex) {
+				return columnTypes[columnIndex];
+			}
+		});
+		
+		for (int i = 0; i < minhaLista.getTamanhoLista(); i++)
+		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+		centerRenderer.setHorizontalAlignment( JLabel.CENTER );
+		table.getColumnModel().getColumn(0).setCellRenderer( centerRenderer );
+		
+		// Carrega todas a lista com os pagamentos no inicio do programa
+		for (int i = 0; i < minhaLista.getTamanhoLista(); i++) {
+			DefaultTableModel dm = (DefaultTableModel) table.getModel();
+			dm.addRow(new Object[] { minhaLista.getListaPagamento().get(i).getNome(),
+					minhaLista.getListaPagamento().get(i).getValor(), minhaLista.getListaPagamento().get(i).getStringData(),
+					minhaLista.getListaPagamento().get(i).getEstado() });
+		}
+		
+	}
+
+	private void somaPagamenentos() {
+
+	}
+}

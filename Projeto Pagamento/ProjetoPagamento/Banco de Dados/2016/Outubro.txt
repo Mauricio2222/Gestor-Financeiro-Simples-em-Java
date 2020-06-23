@@ -1,0 +1,7 @@
+Certo ; 100.0 ; 20/02/2016 ; false
+Certo ; 200.0 ; 01/11/2016 ; false
+Errado ; 100.45 ; 02/11/2016 ; false
+Errado ; 900.4 ; 03/11/2016 ; false
+Sky ; 200.0 ; 29/11/2016 ; true
+Internet ; 300.0 ; 30/11/2016 ; true
+Internet2 ; 900.4 ; 01/12/2016 ; true
